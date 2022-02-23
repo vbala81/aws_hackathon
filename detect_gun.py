@@ -8,8 +8,10 @@ import os
 def recognizeFace(client, image, collection):
     face_matched = False
     response = ''
+    print ('in recognizeface')
     with open(image, 'rb') as file:
         response = client.detect_labels(Image={'Bytes': file.read()}, MaxLabels=10)
+        print (response)
     for label in response['Labels']:
         print ("Label: " + label['Name'])
         print ("Confidence: " + str(label['Confidence']))
@@ -51,7 +53,7 @@ def main():
 
     #initialize reckognition sdk
     client = boto3.client('rekognition')
-
+    print (client)
     while True:
         frame = {}
         #calling read() twice as a workaround to clear the buffer.
