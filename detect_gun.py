@@ -73,12 +73,17 @@ def main():
     #initialize reckognition sdk
     client = boto3.client('rekognition')
     print (client)
-    while cam.isOpened():
+    while true:
         frame = {}
         #calling read() twice as a workaround to clear the buffer.
         cam.read()
         cam.read()
-        ret, frame = cam.read()
+        success, frame = cam.read()
+        if not success:
+        sys.exit(
+            'ERROR: Unable to read from webcam. Please verify your webcam settings.'
+        )        
+        print (frame)
         if frame is None:
             print('--(!) No captured frame -- Break!')
             break
