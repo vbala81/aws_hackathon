@@ -1,5 +1,4 @@
 from picamera import PiCamera
-from espeak import espeak
 import cv2 as cv
 import argparse
 import boto3
