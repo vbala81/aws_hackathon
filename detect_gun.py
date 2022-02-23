@@ -10,9 +10,9 @@ def recognizeFace(client, image):
     face_matched = False
     response = ''
     print ('in recognizeface')
-    with open(image, 'rb') as file:
-        response = client.detect_labels(Image={'Bytes': file.read()}, MaxLabels=10)
-        print (response)
+    # with open(image, 'rb') as file:
+    response = client.detect_labels(Image={'Bytes': image.read()}, MaxLabels=10)
+    print (response)
     for label in response['Labels']:
         print ("Label: " + label['Name'])
         print ("Confidence: " + str(label['Confidence']))
