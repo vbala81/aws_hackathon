@@ -4,8 +4,6 @@ import argparse
 import boto3
 import time
 import os
-from object_detector import ObjectDetector
-from object_detector import ObjectDetectorOptions
 
 def recognizeFace(client, image, collection):
     face_matched = False
