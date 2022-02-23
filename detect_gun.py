@@ -9,10 +9,10 @@ import sys
 def recognizeFace(client, image):
     face_matched = False
     response = ''
-    print ('in recognizeface')
-    # with open(image, 'rb') as file:
-    response = client.detect_labels(Image=image, MaxLabels=10)
-    print (response)
+    print('in recognizeface')
+    with open(image, 'rb') as file:
+        response = client.detect_labels(Image=Image={'Bytes': file.read()}, MaxLabels=10)
+    print(response)
     for label in response['Labels']:
         print ("Label: " + label['Name'])
         print ("Confidence: " + str(label['Confidence']))
@@ -32,6 +32,13 @@ def recognizeFace(client, image):
         print ("----------")
         print ()
     return response
+
+def storeImage(frame):	
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    image = '{0}/image_{1}.png'.format(directory, timestr)
+    cv.imwrite(image,frame)
+    print ('Your image was saved to %s' %image)
+    return image
 
 def main():	
 
@@ -85,7 +92,7 @@ def main():
                 'ERROR: Unable to read from webcam. Please verify your webcam settings.'
             )        
         print (frame)
-        image = frame.tobytes()
+        image = storeImage(frame)
         if image is not None:
             response = recognizeFace(client, image)
 
