@@ -86,8 +86,6 @@ def main():
             )        
         print (frame)
         if frame is not None:
-            print('--(!) No captured frame -- Break!')
-            break
             response = recognizeFace(client, frame , args.collection)
 
         if cv.waitKey(20) & 0xFF == ord('q'):
