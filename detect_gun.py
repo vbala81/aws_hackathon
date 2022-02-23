@@ -15,12 +15,11 @@ def recognizeFace(client, image):
         response = client.detect_labels(Image={'Bytes': file.read()}, MaxLabels=10, MinConfidence=60)
     print(response)
     for label in response['Labels']:
-        print ("Label: " + label['Name'])
-        print ("Confidence: " + str(label['Confidence']))
-        for parent in label['Parents']:
-            print ("   " + parent['Name'])
-        print ("----------")
-        print ()
+        label = label['Name']
+        if (label.endswith('Gun')):
+            print ('Weapon Detected')
+            print ("Label: " + label['Name'])
+            print ("Confidence: " + str(label['Confidence']))
     os.remove(image)
     return response
 
