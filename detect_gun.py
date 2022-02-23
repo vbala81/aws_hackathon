@@ -34,19 +34,12 @@ def main():
 
     #get args
     parser = argparse.ArgumentParser(description='Facial recognition')
-    parser.add_argument('--collection', help='Collection Name', default='chappie-faces')
-    parser.add_argument('--face_cascade', help='Path to face cascade.', default='../opencv/data/haarcascades/haarcascade_frontalface_alt2.xml')
     parser.add_argument('--camera', help='Camera device number.', type=int, default=0)
     args = parser.parse_args()
 
     #intialize opencv face detection
     face_cascade_name = args.face_cascade
     face_cascade = cv.CascadeClassifier()
-
-    #Load the cascades
-    if not face_cascade.load(cv.samples.findFile(face_cascade_name)):
-        print('--(!)Error loading face cascade')
-        exit(0)
 
     camera_device = args.camera
 
