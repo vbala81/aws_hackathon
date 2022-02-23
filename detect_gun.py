@@ -85,8 +85,9 @@ def main():
                 'ERROR: Unable to read from webcam. Please verify your webcam settings.'
             )        
         print (frame)
-        if frame is not None:
-            response = recognizeFace(client, frame)
+        image = frame.tobytes()
+        if image is not None:
+            response = recognizeFace(client, image)
 
         if cv.waitKey(20) & 0xFF == ord('q'):
             break
