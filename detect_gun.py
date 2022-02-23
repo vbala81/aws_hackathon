@@ -10,6 +10,7 @@ def recognizeFace(client, image):
     face_matched = False
     response = ''
     print('in recognizeface')
+    print(f'recognizeFace name is {image}')
     with open(image, 'rb') as file:
         response = client.detect_labels(Image={'Bytes': file.read()}, MaxLabels=10)
     print(response)
@@ -91,8 +92,9 @@ def main():
             sys.exit(
                 'ERROR: Unable to read from webcam. Please verify your webcam settings.'
             )        
-        print (frame)
+        print(frame)
         image = storeImage(frame)
+        print(f'image name is {image}')
         if image is not None:
             response = recognizeFace(client, image)
 
