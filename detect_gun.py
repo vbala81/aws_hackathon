@@ -6,7 +6,7 @@ import time
 import os
 import sys
 
-def recognizeFace(client, image, collection):
+def recognizeFace(client, image):
     face_matched = False
     response = ''
     print ('in recognizeface')
@@ -86,7 +86,7 @@ def main():
             )        
         print (frame)
         if frame is not None:
-            response = recognizeFace(client, frame , args.collection)
+            response = recognizeFace(client, frame)
 
         if cv.waitKey(20) & 0xFF == ord('q'):
             break
