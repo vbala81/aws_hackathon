@@ -4,6 +4,8 @@ import argparse
 import boto3
 import time
 import os
+from object_detector import ObjectDetector
+from object_detector import ObjectDetectorOptions
 
 def recognizeFace(client, image, collection):
     face_matched = False
@@ -45,7 +47,26 @@ def main():
     cam = cv.VideoCapture(camera_device)
     #setting the buffer size and frames per second, to reduce frames in buffer
     cam.set(cv.CAP_PROP_BUFFERSIZE, 1)
-    cam.set(cv.CAP_PROP_FPS, 2);
+    cam.set(cv.CAP_PROP_FPS, 2)
+    # cam.set(cv.CAP_PROP_FRAME_WIDTH, width)
+    # cam.set(cv.CAP_PROP_FRAME_HEIGHT, height)
+
+    # # Visualization parameters
+    # row_size = 20  # pixels
+    # left_margin = 24  # pixels
+    # text_color = (0, 0, 255)  # red
+    # font_size = 1
+    # font_thickness = 1
+    # fps_avg_frame_count = 10
+
+    # # Initialize the object detection model
+    # options = ObjectDetectorOptions(
+    #     num_threads=4,
+    #     score_threshold=0.3,
+    #     max_results=3,
+    #     enable_edgetpu=False)
+    # detector = ObjectDetector(model_path='efficientdet_lite0.tflite', options=options)
+
 
     if not cam.isOpened:
         print('--(!)Error opening video capture')
@@ -54,16 +75,16 @@ def main():
     #initialize reckognition sdk
     client = boto3.client('rekognition')
     print (client)
-    while True:
+    while cam.isOpened():
         frame = {}
         #calling read() twice as a workaround to clear the buffer.
         cam.read()
         cam.read()
-        ret, frame = cam.read()		
+        ret, frame = cam.read()
         if frame is None:
             print('--(!) No captured frame -- Break!')
             break
-            response = recognizeFace(client, image , args.collection)
+            response = recognizeFace(client, frame , args.collection)
 
         if cv.waitKey(20) & 0xFF == ord('q'):
             break
@@ -75,4 +96,3 @@ def main():
 dirname = os.path.dirname(__file__)
 directory = os.path.join(dirname, 'faces')
 main()
-
