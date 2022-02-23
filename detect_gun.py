@@ -37,10 +37,6 @@ def main():
     parser.add_argument('--camera', help='Camera device number.', type=int, default=0)
     args = parser.parse_args()
 
-    #intialize opencv face detection
-    face_cascade_name = args.face_cascade
-    face_cascade = cv.CascadeClassifier()
-
     camera_device = args.camera
 
     #Read the video stream
