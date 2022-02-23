@@ -4,6 +4,7 @@ import argparse
 import boto3
 import time
 import os
+import sys
 
 def recognizeFace(client, image, collection):
     face_matched = False
@@ -80,9 +81,9 @@ def main():
         cam.read()
         success, frame = cam.read()
         if not success:
-        sys.exit(
-            'ERROR: Unable to read from webcam. Please verify your webcam settings.'
-        )        
+            sys.exit(
+                'ERROR: Unable to read from webcam. Please verify your webcam settings.'
+            )        
         print (frame)
         if frame is None:
             print('--(!) No captured frame -- Break!')
