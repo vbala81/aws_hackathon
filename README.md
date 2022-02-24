@@ -19,7 +19,7 @@ sudo apt-get dist-upgrade
 Depending on how long it’s been since you’ve updated your Pi, the upgrade could take anywhere between a minute and an hour.
 
 <p align="center">
-  <img src="doc/update.png">
+  <img src="update.png">
 </p>
 
 ### 2. Install OpenCV
@@ -143,7 +143,7 @@ Okay, now everything is set up for performing object detection on the Pi! The Py
 If you’re using a Picamera, make sure it is enabled in the Raspberry Pi configuration menu.
 
 <p align="center">
-  <img src="doc/camera_enabled.png">
+  <img src="camera_enabled.png">
 </p>
 
 ```
