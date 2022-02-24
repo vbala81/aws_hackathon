@@ -16,9 +16,9 @@ def recognizeFace(client, image):
         response = client.detect_labels(Image={'Bytes': file.read()}, MaxLabels=10, MinConfidence=60)
     labels = response['Labels']
     for label in labels:
-        label = label['Name']
+        label_name = label['Name']
         print("Label: " + label)
-        if (label.endswith('Gun')):
+        if (label_name.endswith('Gun')):
             print ('Weapon Detected')
             print ("Confidence: " + str(label['Confidence']))
             sns_client = boto3.client('sns')
