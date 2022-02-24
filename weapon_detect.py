@@ -17,7 +17,7 @@ def recognizeFace(client, image):
     labels = response['Labels']
     for label in labels:
         label_name = label['Name']
-        print("Label: " + label)
+        print("Label: " + label_name)
         if (label_name.endswith('Gun')):
             print ('Weapon Detected')
             print ("Confidence: " + str(label['Confidence']))
