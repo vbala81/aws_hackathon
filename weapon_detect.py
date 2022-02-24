@@ -5,6 +5,7 @@ import boto3
 import time
 import os
 import sys
+import json
 
 def recognizeFace(client, image):
     face_matched = False
@@ -19,8 +20,12 @@ def recognizeFace(client, image):
         print("Label: " + label)
         if (label.endswith('Gun')):
             print ('Weapon Detected')
-            print ("Label: " + label['Name'])
             print ("Confidence: " + str(label['Confidence']))
+            sns_client = boto3.client('sns')
+            response = sns_client.publish(
+                TargetArn='arn:aws:sns:us-east-1:680445953140:hackathon-gun-detection-stack-AlertSNSTopic-MOK0S0RXFCHD',
+                Message=json.dumps('Alert! Your School camera has detected a weapon')
+            )            
         else:
             print ('No gun detected')
     os.remove(image)
