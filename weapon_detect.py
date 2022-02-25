@@ -20,14 +20,20 @@ def recognizeFace(client, image):
         print("Label: " + label_name)
         if (label_name.endswith('Gun')):
             print ('Weapon Detected')
-            print ("Confidence: " + str(label['Confidence']))
-            sns_client = boto3.client('sns')
-            response = sns_client.publish(
-                TargetArn='arn:aws:sns:us-east-1:680445953140:hackathon-gun-detection-stack-AlertSNSTopic-MOK0S0RXFCHD',
-                Message=json.dumps('Alert! Your School camera has detected a weapon')
-            )            
-        else:
-            print ('No gun detected')
+            message = 'Alert! Your School camera has detected a weapon.'
+            # sns_client = boto3.client('sns')
+            # response = sns_client.publish(
+            #     TargetArn='arn:aws:sns:us-east-1:680445953140:hackathon-gun-detection-stack-AlertSNSTopic-MOK0S0RXFCHD',
+            #     Message=json.dumps(message)
+            # )            
+            s3_client = boto3.client('s3')
+            S3_KEY = 'detected_images'
+            with open(image, 'rb') as data:
+                upload_status = s3_client.upload_fileobj(data, 'aabg-hackathon-q2-2022-gun-detection', S3_KEY)
+            lambda_client = boto3.client('lambda')
+            alert_response = lambda_client.invoke(FunctionName='hackathon-gun-detection-stack-CustomResourceLambda-g9ow0mVdHeim',
+                                                  Payload = {'FileName': S3_KEY})
+
     os.remove(image)
     return response
 
