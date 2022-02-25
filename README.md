@@ -165,7 +165,7 @@ Run the script by issuing and you can see below output:
 python3 detect_weapon.py 
 ```
 <p align="center">
-  <img src="weapon_detect.png">
+  <img src="weapon_detect.jpg">
 </p>
 
 If a Weapon is detected, it will send a message to the subscription number for the SNS topic 
