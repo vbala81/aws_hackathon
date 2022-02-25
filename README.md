@@ -135,7 +135,21 @@ $ sudo cp cv2.cpython-37m-arm-linux-gnueabihf.so \
 Alright, now OpenCV is installed!
 
 ### 3. Set up AWS User for rekognition!
-AWSCli setup on rasp pi
+SSH into your Raspberry Pi. Install latest version of Boto 3 (AWS SDK for Python) and AWS CLI.
+```
+pip install boto3
+sudo pip install awscli
+```
+Setup authentication credentials for boto3 with AWS key ID and Secret access key setup, which we configured earlier.
+
+```
+aws configure
+AWS Access Key ID [None]:  YOUR_ACCESS_KEY_ID
+AWS Secret Access Key [None]: YOUR_SECRET_ACCESS_KEY
+Default region name [None]: us-east-1
+Default output format [None]: ENTER
+
+```
 
 ### 4. Detect Objects!
 Okay, now everything is set up for performing object detection on the Pi! The Python script in this repository, detect_gun.py, detects objects in live feeds from a Picamera or USB webcam. Basically, the script sets paths to the model and initializes the Picamera, and then begins performing object detection on each video frame from the Picamera by making calls to aws rekognition. 
