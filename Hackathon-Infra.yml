@@ -1,0 +1,187 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Stack to create an SNS topic and required roles for sending phone alerts on gun detection'
+Parameters:
+  GunImageURLExpiration:
+    Type: Number
+    Description: Enter URL expiration in seconds for any gun image links sent with alerts
+  PhoneAlertList:
+    Type: CommaDelimitedList
+    Description: Enter list of phone numbers (comma separated) to be notified for gun detection alerts
+Resources:
+  GunImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: aabg-hackathon-q2-2022-gun-detection
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  AlertSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: Gun Detection Alert
+  CreateSNSTopicSubscriptions:
+    DependsOn: AlertSNSTopic
+    Type: Custom::SNSTopicSubscriptions
+    Properties:
+      ServiceToken: !GetAtt CustomResourceLambda.Arn
+      PhoneAlertList: !Ref PhoneAlertList
+      SNSTopicARN: !Ref AlertSNSTopic
+  CustomResourceLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.8
+      Role: !GetAtt CustomResourceLambdaRole.Arn
+      Timeout: 30
+      Handler: "index.handler"
+      Code:
+        ZipFile:
+          Fn::Sub: |
+            import json
+            import boto3
+            import cfnresponse
+
+            sns = boto3.client('sns')
+
+            def handler(event, context):
+
+                responseData = {}
+
+                phone_list = event['ResourceProperties']['PhoneAlertList']
+                sns_arn = event['ResourceProperties']['SNSTopicARN']
+
+                if event['RequestType'] != 'Delete':
+                    
+                    for phone in phone_list:
+                        try:
+                            response = sns.subscribe(TopicArn = sns_arn,
+                                                    Protocol = 'sms',
+                                                    Endpoint = phone)
+                            print(response)
+                        except Exception as e:
+                            print('Exception ocurred while trying to add subscription for '+ phone +'\n')
+                            print(e)
+                            
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)
+                return
+  CustomResourceLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: !Sub "sns-policy-${AWS::StackName}"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Subscribe
+                Resource: "*"
+  GunAlertFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.8
+      Role: !GetAtt GunAlertLambdaRole.Arn
+      Timeout: 30
+      Handler: "index.handler"
+      Environment:
+        Variables:
+          UrlExpiration: !Ref GunImageURLExpiration
+          AlertTopicArn: !Ref AlertSNSTopic
+          BucketName: !Ref GunImageBucket
+      Code:
+        ZipFile:
+          Fn::Sub: |
+            import json
+            import boto3
+            import os
+
+            s3 = boto3.client('s3')
+            sns = boto3.client('sns')
+
+            def handler(event, context):
+                print(event)
+                bucket_name = os.environ['BucketName']
+                object_key = event['FileName']
+                expiration = os.environ['UrlExpiration']
+
+                try:
+                    url = s3.generate_presigned_url('get_object',
+                                                    Params = {
+                                                        'Bucket': bucket_name,
+                                                        'Key': object_key
+                                                    },
+                                                    ExpiresIn = expiration)
+                except Exception as e:
+                    print(e)
+                    return(e)
+
+                try:
+                    response = sns.publish(TopicArn = os.environ['AlertTopicArn'],
+                                            Message = 'Alert! Your School camera has detected a weapon.\n'
+                                                        + 'Camera Location: Bala\'s Office\n'
+                                                        + 'Click the link below to view the flagged image:\n\n'
+                                                        + url)
+                    print(response)
+                except Exception as e:
+                    print(e)
+                    return(e)
+
+                return('Success!')
+  GunAlertLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: !Sub "s3-policy-${AWS::StackName}"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub "arn:aws:s3:::${GunImageBucket}/*"
+        - PolicyName: !Sub "logs-policy-${AWS::StackName}"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+        - PolicyName: !Sub "sns-policy-${AWS::StackName}"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref AlertSNSTopic
+Outputs:
+  AlertSNSTopic:
+   Description: SNS Topic for sending phone alerts
+   Value: !Ref AlertSNSTopic
