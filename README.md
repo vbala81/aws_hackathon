@@ -160,8 +160,16 @@ If you’re using a Picamera, make sure it is enabled in the Raspberry Pi config
   <img src="camera_enabled.png">
 </p>
 
-```
-Run the script by issuing: 
+Run the script by issuing and you can see below output: 
 ```
 python3 detect_weapon.py 
 ```
+<p align="center">
+  <img src="weapon_detect.png">
+</p>
+
+If a Weapon is detected, it will send a message to the subscription number for the SNS topic 
+
+<p align="center">
+  <img src="alert_message.png">
+</p>
