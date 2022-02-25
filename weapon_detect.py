@@ -10,16 +10,15 @@ import json
 def recognizeFace(client, image):
     face_matched = False
     response = ''
-    print('in recognizeface')
     print(f'recognizeFace name is {image}')
     with open(image, 'rb') as file:
         response = client.detect_labels(Image={'Bytes': file.read()}, MaxLabels=10, MinConfidence=60)
     labels = response['Labels']
     for label in labels:
         label_name = label['Name']
-        print("Label: " + label_name)
+        print("Detected Object -->  " + label_name)
         if (label_name.endswith('Gun')):
-            print ('Weapon Detected')
+            print ('Alert ------>>>>>> Weapon Detected')
             message = 'Alert! Your School camera has detected a weapon.'
             # sns_client = boto3.client('sns')
             # response = sns_client.publish(
@@ -41,7 +40,7 @@ def storeImage(frame):
     timestr = time.strftime("%Y%m%d-%H%M%S")
     image = '{0}/image_{1}.png'.format(directory, timestr)
     cv.imwrite(image,frame)
-    print ('Your image was saved to %s' %image)
+    # print ('Your image was saved to %s' %image)
     return image
 
 def main():	
