@@ -5,7 +5,7 @@ This guide provides step-by-step instructions for how to set up Open CV API on t
 
 Here's a YouTube video that can guide on how to setup raspberry pi initially!
 
-[![Link to my YouTube video!]((https://www.youtube.com/watch?v=npZ-8Nj1YwY)
+[![Link to my YouTube video!]((https://www.youtube.com/watch?v=LsdmqDVw4MA)
 
 The repository includes the gun_detect.py script, which is a Python script that loads an object detection using camera in opencv and uses it to detect objects in a Picamera video feed. The guide is written for opencv 4.4.0 on a Raspberry Pi Model 4. It will likely work for newer versions of TensorFlow.
 
