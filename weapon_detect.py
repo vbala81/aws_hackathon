@@ -25,13 +25,13 @@ def recognizeFace(client, image):
             #     Message=json.dumps(message)
             # )            
             s3_client = boto3.client('s3')
-            S3_KEY = 'detected_images'
+            S3_KEY = 'detected_images/'
             with open(image, 'rb') as data:
                 upload_status = s3_client.upload_fileobj(data, 'aabg-hackathon-q2-2022-gun-detection', S3_KEY + image)
             lambda_client = boto3.client('lambda')
             alert_response = lambda_client.invoke(FunctionName='hackathon-gun-detection-stack-CustomResourceLambda-g9ow0mVdHeim',
                                                   Payload = bytes(json.dumps({'FileName': S3_KEY + image}), encoding='utf8'))
-
+            print (alert_response)
     os.remove(image)
     return response
 
